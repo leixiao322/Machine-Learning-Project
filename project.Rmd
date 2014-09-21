@@ -1,0 +1,39 @@
+Course Project
+========================================================
+
+Firstly, I loaded the data
+```{r cache=TRUE}
+data=read.csv("pml-training.csv",header=T)
+testing=read.csv("pml-testing.csv",header=T)
+```
+Then I found that there are some NAs and "", so I decided to omit these columns. Moreover, I cut the X away.
+```{r cache=TRUE}
+judge<-is.na(data[1,])|data[1,]==""
+predictor=data[,judge==F]
+predictor=predictor[,-1]
+```
+In considering the cross-validation issue, I noticed that the data is ranked from A to E, so use createDataPartition function would cut some classes away. K-fold would also inappropriate in the same reason. So I decided to use createResample function.
+```{r}
+library(caret)
+set.seed(123)
+resample=createResample(y=predictor$user_name,times=1,list=F)
+resampledata=predictor[resample,]
+```
+
+Then I fitted and predicted by the model. and the plot tree is like:
+```{r cache=TRUE}
+modfit=train(classe~.,data=resampledata,method="rpart")
+```
+The plot tree is like:
+```{r warning=FALSE, message=FALSE}
+library(rattle)
+fancyRpartPlot(modfit$finalModel)
+```
+And finally predict with testing set:
+```{r}
+predict(modfit,newdata=testing)
+```
+
+In fact I also tried bagging algorithm and rf, the result is not very good and it takes a much longer time to run. So I only write the tree model here.
+
+
