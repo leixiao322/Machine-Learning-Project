@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="Machine-learning-project : the homework of practical machine learning">
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Machine-learning-project</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/leixiao322/Machine-Learning-Project">View on GitHub</a>
+
+          <h1 id="project_title">Machine-learning-project</h1>
+          <h2 id="project_tagline">the homework of practical machine learning</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/leixiao322/Machine-Learning-Project/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/leixiao322/Machine-Learning-Project/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>
+<a name="course-project" class="anchor" href="#course-project"><span class="octicon octicon-link"></span></a>Course Project</h1>
+
+<p>Firstly, I loaded the data</p>
+
+<div class="highlight highlight-r"><pre>data<span class="o">=</span>read.csv<span class="p">(</span><span class="s">"pml-training.csv"</span><span class="p">,</span>header<span class="o">=</span><span class="bp">T</span><span class="p">)</span>
+testing<span class="o">=</span>read.csv<span class="p">(</span><span class="s">"pml-testing.csv"</span><span class="p">,</span>header<span class="o">=</span><span class="bp">T</span><span class="p">)</span>
+</pre></div>
+
+<p>Then I found that there are some NAs and "", so I decided to omit these columns. Moreover, I cut the X away.</p>
+
+<div class="highlight highlight-r"><pre>judge<span class="o">&lt;-</span><span class="kp">is.na</span><span class="p">(</span>data<span class="p">[</span><span class="m">1</span><span class="p">,])</span><span class="o">|</span>data<span class="p">[</span><span class="m">1</span><span class="p">,]</span><span class="o">==</span><span class="s">""</span>
+predictor<span class="o">=</span>data<span class="p">[,</span>judge<span class="o">==</span><span class="bp">F</span><span class="p">]</span>
+predictor<span class="o">=</span>predictor<span class="p">[,</span><span class="m">-1</span><span class="p">]</span>
+</pre></div>
+
+<p>In considering the cross-validation issue, I noticed that the data is ranked from A to E, so use createDataPartition function would cut some classes away. K-fold would also inappropriate in the same reason. So I decided to use createResample function.</p>
+
+<div class="highlight highlight-r"><pre><span class="kn">library</span><span class="p">(</span>caret<span class="p">)</span>
+<span class="kp">set.seed</span><span class="p">(</span><span class="m">123</span><span class="p">)</span>
+resample<span class="o">=</span>createResample<span class="p">(</span>y<span class="o">=</span>predictor<span class="o">$</span>user_name<span class="p">,</span>times<span class="o">=</span><span class="m">1</span><span class="p">,</span><span class="kt">list</span><span class="o">=</span><span class="bp">F</span><span class="p">)</span>
+resampledata<span class="o">=</span>predictor<span class="p">[</span>resample<span class="p">,]</span>
+</pre></div>
+
+<p>Then I fitted and predicted by the model. and the plot tree is like:</p>
+
+<div class="highlight highlight-r"><pre>modfit<span class="o">=</span>train<span class="p">(</span>classe<span class="o">~</span><span class="m">.</span><span class="p">,</span>data<span class="o">=</span>resampledata<span class="p">,</span>method<span class="o">=</span><span class="s">"rpart"</span><span class="p">)</span>
+</pre></div>
+
+<p>The plot tree is like:</p>
+
+<div class="highlight highlight-r"><pre><span class="kn">library</span><span class="p">(</span>rattle<span class="p">)</span>
+fancyRpartPlot<span class="p">(</span>modfit<span class="o">$</span>finalModel<span class="p">)</span>
+</pre></div>
+
+<p>And finally predict with testing set:</p>
+
+<div class="highlight highlight-r"><pre>predict<span class="p">(</span>modfit<span class="p">,</span>newdata<span class="o">=</span>testing<span class="p">)</span>
+</pre></div>
+
+<p>In fact I also tried bagging algorithm and rf, the result is not very good and it takes a much longer time to run. So I only write the tree model here.</p>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Machine-learning-project maintained by <a href="https://github.com/leixiao322">leixiao322</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
